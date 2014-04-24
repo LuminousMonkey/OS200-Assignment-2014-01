@@ -11,8 +11,10 @@
 #ifndef DEBUGGING_H_
 #define DEBUGGING_H_
 
+#include <stdio.h>
+
 #ifndef DEBUG
-#define DEBUG 0
+#define DEBUG 1
 #endif
 
 #define debug_print(...)                                            \

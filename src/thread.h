@@ -14,6 +14,11 @@
 #include <stdbool.h>
 
 /*
+ * Number of threads to run.
+ */
+#define NUM_THREADS 8
+
+/*
  * Our shared data for our threads, this is to contain all the data
  * shared between threads.
  *
@@ -59,5 +64,9 @@ struct SharedData {
   char *output_buffer;
 };
 
+/*
+ * Forward Declarations.
+ */
+void *run_sched_thread(void *shared_data_in);
 
 #endif

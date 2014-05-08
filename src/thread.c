@@ -21,6 +21,10 @@
 #include "sjf_scheduler.h"
 #include "thread.h"
 
+// Strings for displaying scheduler type.
+#define RR_STR "RR"
+#define SJF_STR "SJF"
+
 /*
  * Forward declarations.
  */
@@ -153,13 +157,23 @@ static void write_result_to_buffer(struct SharedData *const restrict shared_data
     debug_print("\t%d - We have the output buffer.\n", thread_number);
   }
 
+  char *scheduler_type;
+
+  if (thread_number % 2 != 0) {
+    scheduler_type = RR_STR;
+  } else {
+    scheduler_type = SJF_STR;
+  }
+
   // We put our result string into the output buffer, and let the
   // parent thread know.
   sprintf(shared_data->output_buffer,
           "T: %d. "
+          "%s - "
           "Average Waiting: %f. "
           "Average Turnaround: %f\n",
           thread_number,
+          scheduler_type,
           averages.waiting_time,
           averages.turnaround_time);
 

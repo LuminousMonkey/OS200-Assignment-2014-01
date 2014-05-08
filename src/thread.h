@@ -16,7 +16,7 @@
 /*
  * Number of threads to run.
  */
-#define NUM_THREADS 8
+#define NUM_THREADS 100
 
 /*
  * Our shared data for our threads, this is to contain all the data

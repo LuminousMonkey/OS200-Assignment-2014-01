@@ -69,6 +69,13 @@ void *run_sched_thread(void *shared_data_in) {
       // change it until it gets the result from us.
       pthread_mutex_unlock(&shared_data->input_mutex);
 
+      debug_print("\t%d - Running Scheduler.\n", thread_number);
+
+      // While the parent thread is waiting for us, it will not touch
+      // anything, so we don't have to lock.
+      struct SchedulerAverages averages =
+          run_scheduler(shared_data->input_buffer, scheduler_to_run);
+
       // We do however, need to tell the input thread that we've got the input.
       debug_print("\t%d - Trying to get Scheduler Ready Mutex.\n", thread_number);
       pthread_mutex_lock(&shared_data->scheduler_ready_mutex);
@@ -78,13 +85,6 @@ void *run_sched_thread(void *shared_data_in) {
       pthread_cond_signal(&shared_data->scheduler_ready_cond);
       debug_print("\t%d - Signalled scheduler ready cond.\n", thread_number);
       pthread_mutex_unlock(&shared_data->scheduler_ready_mutex);
-
-      debug_print("\t%d - Running Scheduler.\n", thread_number);
-
-      // While the parent thread is waiting for us, it will not touch
-      // anything, so we don't have to lock.
-      struct SchedulerAverages averages =
-          run_scheduler(shared_data->input_buffer, scheduler_to_run);
 
       debug_print("\t%d - Trying to write to output buffer.\n", thread_number);
       write_result_to_buffer(shared_data, averages, thread_number);

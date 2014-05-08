@@ -68,6 +68,9 @@ int main(void) {
     // it.
     pthread_mutex_unlock(&shared_data.input_mutex);
 
+    debug_print("P: Locking output mutex.\n");
+    pthread_mutex_lock(&shared_data.output_mutex);
+
     debug_print("P: Waiting on schedulers to read input.\n");
     // Now we need to wait for the threads to be ready reading the
     // input. But we have to make sure that we grab the output buffer
@@ -86,9 +89,9 @@ int main(void) {
     pthread_mutex_lock(&shared_data.input_mutex);
     shared_data.input_ready = false;
     pthread_mutex_unlock(&shared_data.input_mutex);
+    pthread_mutex_unlock(&shared_data.output_mutex);
 
     debug_print("P: Input ready cleared.\n");
-
 
     /*
      * The parent thread needs to lock the mutex on the schedulers

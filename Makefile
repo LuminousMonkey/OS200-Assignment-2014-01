@@ -1,8 +1,8 @@
 SRC = INCLUDES = -Isrc
 
-CFLAGS = -g -fsanitize=thread -fPIE -MMD -Wall -pthread -pedantic -std=c99 -fstrict-aliasing $(INCLUDES)
+CFLAGS = -g -MMD -Wall -pthread -pedantic -std=c99 -fstrict-aliasing $(INCLUDES)
 
-LDFLAGS = -fsanitize=thread -pie
+LDFLAGS =
 
 CC ?= gcc
 

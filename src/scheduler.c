@@ -20,9 +20,14 @@
 #include "sorting.h"
 #include "user_input.h"
 
+/*
+ * run_scheduler
+ *
+ * Given a filename and a function pointer to a scheduler function,
+ * return the waiting time and the turnaround time averages.
+ */
 struct SchedulerAverages run_scheduler(const char *const filename,
                                        const Scheduler scheduler_to_use) {
-
   struct LinkedList process_list;
   int quantum;
   struct SchedulerAverages averages = {0.0,0.0};
@@ -32,11 +37,6 @@ struct SchedulerAverages run_scheduler(const char *const filename,
   if (error != FILE_ERR_NONE) {
     perror("main() - File Error");
   } else {
-    #ifdef DEBUG
-    printf("%d entries were read.\n", process_list.count);
-    printf("Quantum: %d\n\n", quantum);
-    #endif
-
     int list_count = process_list.count;
 
     struct ProcessEntry *entries = calloc(sizeof(struct ProcessEntry),
@@ -44,24 +44,17 @@ struct SchedulerAverages run_scheduler(const char *const filename,
 
     assert(entries != NULL);
 
-    fifo_sort(&process_list, entries);
+    selection_sort(&process_list, entries);
 
     destroy_list(&process_list);
 
+    // Run the scheduler.
     (*scheduler_to_use)(entries, list_count, quantum);
 
     int total_waiting_time = 0;
     int total_turnaround_time = 0;
 
     for (int i = 0; i < list_count; i++) {
-      #ifdef DEBUG
-      printf("Arrival Time: %d, Burst Time: %d, "
-             "Turnaround: %d, Waiting: %d.\n",
-             entries[i].arrival_time,
-             entries[i].burst_time,
-             entries[i].turnaround_time,
-             entries[i].waiting_time);
-      #endif
       total_waiting_time += entries[i].waiting_time;
       total_turnaround_time += entries[i].turnaround_time;
     }
@@ -72,7 +65,6 @@ struct SchedulerAverages run_scheduler(const char *const filename,
     }
 
     free(entries);
-    entries = NULL;
   }
 
   return averages;

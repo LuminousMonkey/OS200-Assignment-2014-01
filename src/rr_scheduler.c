@@ -2,6 +2,8 @@
  * OS200 - Assignment
  *
  * Author: Mike Aldred
+ *
+ * Implimentation of the round robin scheduler.
  */
 
 #include <assert.h>
@@ -14,12 +16,20 @@
 // Forward defines.
 static int smallest(const int num1, const int num2);
 
+/*
+ * rr_scheduler
+ *
+ * Given the process table, run the round robin scheduler on it. The
+ * table will be updated with turnaround time when the process is
+ * finished.
+ */
 void rr_scheduler(struct ProcessEntry *const restrict process_table,
                   const int total_processes,
                   const int quantum) {
 
   assert(process_table != NULL);
 
+  // Just skip to the CPU time for the first process.
   int cpu_time = process_table[0].arrival_time;
   int processes_remaining = total_processes;
   int step = 0;

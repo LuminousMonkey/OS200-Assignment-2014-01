@@ -8,6 +8,12 @@
 
 #include "process_entry.h"
 
+/*
+ * init_process_entry
+ *
+ * Given a pointer to a process entry, the arrival and burst times,
+ * set up the entry.
+ */
 enum ProcessEntryError init_process_entry(
     struct ProcessEntry *const restrict process_entry,
     const int arrival_time,

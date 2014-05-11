@@ -25,9 +25,7 @@
 #define RR_STR "RR"
 #define SJF_STR "SJF"
 
-/*
- * Forward declarations.
- */
+// Forward declarations.
 static Scheduler setup_sched_thread(struct SharedData *const restrict shared_data,
                                     int *const restrict thread_number);
 
@@ -35,23 +33,24 @@ static void write_result_to_buffer(struct SharedData *const restrict shared_data
                                    struct SchedulerAverages averages,
                                    const int thread_number);
 
+/*
+ * run_sched_thread
+ *
+ * The thread code for running the scheduler. Just expects a pointer
+ * to the shared data for mutex and conditionals, the thread will then
+ * wait until there's input from the user. If there is, try to read in
+ * the file and get the scheduler results, putting them into the
+ * output buffer for the parent thread to read.
+ */
 void *run_sched_thread(void *shared_data_in) {
   struct SharedData *const restrict shared_data = shared_data_in;
 
   int thread_number;
-
-  /*
-   * Here we figure out which scheduler we're going to run and
-   * increment the scheduler's ready variable so the parent thread
-   * knows that the threads are waiting on input.
-   */
   Scheduler scheduler_to_run = setup_sched_thread(shared_data,
                                                   &thread_number);
 
-  // Wait until there's input, or the user wants to quit.
   pthread_mutex_lock(&shared_data->input_mutex);
 
-  // User doesn't want to quit.
   while (!shared_data->quit) {
     while (!shared_data->input_ready && !shared_data->quit) {
       pthread_cond_wait(&shared_data->input_cond, &shared_data->input_mutex);
@@ -63,8 +62,6 @@ void *run_sched_thread(void *shared_data_in) {
       // change it until it gets the result from us.
       pthread_mutex_unlock(&shared_data->input_mutex);
 
-      // While the parent thread is waiting for us, it will not touch
-      // anything, so we don't have to lock.
       struct SchedulerAverages averages =
           run_scheduler(shared_data->input_buffer, scheduler_to_run);
 
@@ -77,21 +74,24 @@ void *run_sched_thread(void *shared_data_in) {
 
       write_result_to_buffer(shared_data, averages, thread_number);
 
-      /*
-       * Wrote to the output buffer, this means we're going back to
-       * trying to ready the input. Try to lock the input mutex before
-       * we ready anything.
-       */
+      // Thread is done, wait for more input.
       pthread_mutex_lock(&shared_data->input_mutex);
     }
   }
 
-  // User wants to quit
   pthread_mutex_unlock(&shared_data->input_mutex);
-
   pthread_exit(NULL);
+
+  return NULL;
 }
 
+/*
+ * setup_sched_thread
+ *
+ * Takes a pointer to the shared mutexes and the current thread
+ * number. Even numbered threads will run the SJF scheduler, others
+ * will be the round robin scheduler.
+ */
 static Scheduler setup_sched_thread(struct SharedData *const restrict shared_data,
                                     int *const restrict thread_number) {
   pthread_mutex_lock(&shared_data->scheduler_ready_mutex);
@@ -110,11 +110,18 @@ static Scheduler setup_sched_thread(struct SharedData *const restrict shared_dat
   return scheduler_to_run;
 }
 
+/*
+ * write_result_to_buffer
+ *
+ * Takes in a pointer to the mutexes, the calculated averages, and the
+ * thread number of the scheduler thread that created the result.
+ * Waits until it can write to the output buffer and will return when
+ * it finally can.
+ */
 static void write_result_to_buffer(struct SharedData *const restrict shared_data,
                                    struct SchedulerAverages averages,
                                    const int thread_number) {
 
-  // We have a result now, so we let the parent thread know.
   pthread_mutex_lock(&shared_data->output_mutex);
 
   // Make sure we haven't grabbed the mutex before the parent thread.
@@ -123,6 +130,7 @@ static void write_result_to_buffer(struct SharedData *const restrict shared_data
                       &shared_data->output_mutex);
   }
 
+  // Set the correct prefix for the scheduler output.
   char *scheduler_type;
 
   if (thread_number % 2 != 0) {
@@ -142,9 +150,6 @@ static void write_result_to_buffer(struct SharedData *const restrict shared_data
           averages.turnaround_time);
 
   shared_data->output_ready = true;
-
   pthread_cond_broadcast(&shared_data->output_cond);
-
-  // We've sent a signal
   pthread_mutex_unlock(&shared_data->output_mutex);
 }

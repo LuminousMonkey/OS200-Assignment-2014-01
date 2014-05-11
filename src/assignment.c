@@ -15,6 +15,7 @@
 #include "thread.h"
 #include "user_input.h"
 
+// Forward declarations.
 static void init_data(struct SharedData *const restrict data,
                       const size_t buf_size);
 
@@ -34,15 +35,14 @@ int main(void) {
 
   init_data(&shared_data, BUFFER_SIZE);
 
-  /*
-   * Stop the child threads from going past the input stage.
-   */
+  // Stop the child threads from going past the input stage.
   pthread_mutex_lock(&shared_data.input_mutex);
 
   for (int i = 0; i < NUM_THREADS; ++i) {
     pthread_create(&sched_threads[i], NULL, &run_sched_thread, &shared_data);
   }
 
+  // Wait for all the children to be created.
   wait_for_schedulers(&shared_data);
 
   while (file_from_user(shared_data.input_buffer, BUFFER_SIZE)) {
@@ -50,9 +50,13 @@ int main(void) {
 
     pthread_cond_broadcast(&shared_data.input_cond);
 
+    // Stop the children racing ahead and putting something in the
+    // output buffer before we're ready.
     pthread_mutex_lock(&shared_data.output_mutex);
+
     pthread_mutex_unlock(&shared_data.input_mutex);
 
+    // Wait for all the children to have read the input buffer.
     wait_for_schedulers(&shared_data);
 
     pthread_mutex_lock(&shared_data.input_mutex);
@@ -60,10 +64,11 @@ int main(void) {
     pthread_mutex_unlock(&shared_data.input_mutex);
     pthread_mutex_unlock(&shared_data.output_mutex);
 
+    // Children can now start processing, so check if we have any
+    // output from them.
     pthread_mutex_lock(&shared_data.scheduler_ready_mutex);
 
     while (shared_data.schedulers_ready != NUM_THREADS) {
-
       pthread_mutex_lock(&shared_data.output_mutex);
 
       while (!shared_data.output_ready) {
@@ -74,10 +79,6 @@ int main(void) {
       // Something is in the output buffer.
       printf("%s", shared_data.output_buffer);
 
-      /*
-       * We've got a result from a scheduler, increase the counter so
-       * we'll exit the loop when they're all done.
-       */
       shared_data.schedulers_ready++;
       shared_data.output_ready = false;
 

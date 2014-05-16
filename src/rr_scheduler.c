@@ -7,8 +7,8 @@
  */
 
 #include <assert.h>
+#include <stdbool.h>
 #include <stddef.h>
-
 #include <stdio.h>
 
 #include "rr_scheduler.h"
@@ -33,20 +33,28 @@ void rr_scheduler(struct ProcessEntry *const restrict process_table,
   int cpu_time = process_table[0].arrival_time;
   int processes_remaining = total_processes;
   int step = 0;
+  bool no_process_execd = true;
 
   while (processes_remaining > 0) {
     int current_index = step % total_processes;
 
     if (process_table[current_index].burst_time_remaining != 0) {
+      printf("CPU: %d. Next: %d\n",
+             cpu_time,
+             process_table[current_index].next_cpu_time);
+      if (process_table[current_index].next_cpu_time <= cpu_time) {
+        no_process_execd = false;
 
-      if (process_table[current_index].arrival_time <= cpu_time) {
         const int burst_or_quantum =
             smallest(process_table[current_index].burst_time_remaining,
                      quantum);
 
+        printf("CPU: %d. Proc: %d\n", cpu_time, current_index);
+
         cpu_time += burst_or_quantum;
         process_table[current_index].burst_time_remaining -=
             burst_or_quantum;
+        process_table[current_index].next_cpu_time += burst_or_quantum;
 
         if (process_table[current_index].burst_time_remaining < 1) {
           process_table[current_index].turnaround_time = cpu_time -
@@ -56,9 +64,12 @@ void rr_scheduler(struct ProcessEntry *const restrict process_table,
               process_table[current_index].burst_time;
           --processes_remaining;
         }
+        step = -1;
       } else {
-        // Make CPU time the next largest arrival time.
-        ++cpu_time;
+        if (no_process_execd) {
+          ++cpu_time;
+        }
+        no_process_execd = true;
       }
     }
     ++step;

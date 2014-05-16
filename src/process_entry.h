@@ -11,12 +11,24 @@
 #ifndef PROCESS_ENTRY_H_
 #define PROCESS_ENTRY_H_
 
+/*
+ * ProcessEntry
+ *
+ * This holds a single process entry for our schedulers.
+ *
+ * next_cpu_time is to allow the implementation of a queue for round
+ * robin given that we use an array. Each time a process is run, this
+ * will be updated to the next cpu_time value we expect the process to
+ * be executed on.
+ */
+
 struct ProcessEntry {
   int arrival_time;
   int burst_time;
   int burst_time_remaining;
   int turnaround_time;
   int waiting_time;
+  int next_cpu_time;
 };
 
 /*

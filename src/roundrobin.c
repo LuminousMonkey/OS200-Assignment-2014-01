@@ -24,8 +24,8 @@ int main() {
 
     averages = run_scheduler(filename, &rr_scheduler);
 
-    printf("Average turnaround time=%f."
-           "Average waiting time=%f\n",
+    printf("Average turnaround time=%.2f."
+           "Average waiting time=%.2f\n",
            averages.turnaround_time, averages.waiting_time);
   }
 }

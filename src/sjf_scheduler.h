@@ -15,8 +15,9 @@
 /*
  * SJF Scheduler
  *
- * Takes a pointer to an array of ProcessEntries and run a SJF
- * scheduler on it, (hence the function name, funny that).
+ * Takes a pointer to an array of ProcessEntries and run a
+ * non-preemptive SJF scheduler on it, (hence the function name, funny
+ * that).
  *
  * The array being passed in is expected to be sorted.
  *

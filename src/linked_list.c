@@ -4,10 +4,10 @@
  * Author: Mike Aldred
  *
  * Description:
- *   Simple linked list implimentation for OS 200 assignment.
+ *   Simple linked list implementation for OS 200 assignment.
  *
  * Comments for functions are in the header file, as that is what is
- * "public". Not a full linked list implimentation, just enough to do
+ * "public". Not a full linked list implementation, just enough to do
  * what we need.
  *
  * Check linked_list.h for interface details.

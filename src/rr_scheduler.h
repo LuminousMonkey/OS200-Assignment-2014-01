@@ -3,11 +3,9 @@
  *
  * Author: Mike Aldred
  *
- * The round robin scheduler, will run the current process for either
- * length of quantum or remaining burst time (whichever is smaller),
- * then switch to the next process. Processes are taken in a FCFS
- * fashion, so process entry should not have been sorted beforehand,
- * we're assuming that the file being read in is correct.
+ * The RR scheduler, processes are placed in a queue and executed in a
+ * rotated fashion, the burst time is the smallest of the remaining
+ * burst time of the process, or the quantum.
  */
 
 #ifndef RR_SCHEDULER_H_
@@ -15,6 +13,17 @@
 
 #include "process_entry.h"
 
+/*
+ * RR Scheduler
+ *
+ * Takes a pointer to an array of ProcessEntries and run a RR
+ * scheduler on it, (hence the function name, funny that).
+ *
+ * The array being passed in is expected to be sorted.
+ *
+ * When the scheduler is run, it will update the process entries with
+ * turnaround and waiting times. (Mutable data!)
+ */
 void rr_scheduler(struct ProcessEntry *const restrict process_table,
                   const int total_processes,
                   const int quantum);

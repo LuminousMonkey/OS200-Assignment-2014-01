@@ -115,6 +115,15 @@ int main(void) {
   return EXIT_SUCCESS;
 }
 
+/*
+ * init_data
+ *
+ * Takes the shared data structure that has our mutexes, etc and sets
+ * them to default values. Also allocates input and output buffers.
+ *
+ * data - shared data struct to init.
+ * buf_size - Size for each of input and output buffers.
+ */
 static void init_data(struct SharedData *const restrict data,
                       const size_t buf_size) {
 
@@ -136,6 +145,13 @@ static void init_data(struct SharedData *const restrict data,
   data->output_buffer = calloc(1,buf_size);
 }
 
+/*
+ * wait_for_schedulers
+ *
+ * When this is called, the thread will wait until the children
+ * threads signal they're ready. We're just watching an int value to
+ * hit NUM_THREADS.
+ */
 static void wait_for_schedulers(struct SharedData *const restrict shared_data) {
   // Need to wait here until we know that the threads are up and running.
   // So we will block here until they're ready.
@@ -146,8 +162,6 @@ static void wait_for_schedulers(struct SharedData *const restrict shared_data) {
                       &shared_data->scheduler_ready_mutex);
   }
 
-  // Scheduler threads have started, now they will be considered ready
-  // when they read the input.
   shared_data->schedulers_ready = 0;
   pthread_mutex_unlock(&shared_data->scheduler_ready_mutex);
 }

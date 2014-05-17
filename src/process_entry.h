@@ -28,7 +28,6 @@ struct ProcessEntry {
   int burst_time_remaining;
   int turnaround_time;
   int waiting_time;
-  int next_cpu_time;
 };
 
 /*

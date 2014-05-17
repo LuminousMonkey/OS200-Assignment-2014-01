@@ -35,7 +35,6 @@ enum ProcessEntryError init_process_entry(
     process_entry->burst_time_remaining = burst_time;
     process_entry->turnaround_time = 0;
     process_entry->waiting_time = 0;
-    process_entry->next_cpu_time = arrival_time;
   }
 
   return entry_error;

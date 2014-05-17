@@ -143,8 +143,8 @@ static void write_result_to_buffer(struct SharedData *const restrict shared_data
   // parent thread know.
   sprintf(shared_data->output_buffer,
           "%s:\t"
-          "Average Waiting: %f. "
-          "Average Turnaround: %f\n",
+          "Average Waiting: %.2f. "
+          "Average Turnaround: %.2f\n",
           scheduler_type,
           averages.waiting_time,
           averages.turnaround_time);

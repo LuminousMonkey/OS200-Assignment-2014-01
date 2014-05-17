@@ -8,7 +8,7 @@ CC ?= gcc
 
 .PHONY: clean dirs all
 
-all: dirs roundrobin sjf assignment
+all: dirs roundrobin sjf simulator
 
 dirs:
 	@mkdir -p obj
@@ -16,17 +16,17 @@ dirs:
 SRCFILES := $(wildcard src/*.c)
 OBJFILES := $(patsubst src/%.c,obj/%.o,$(SRCFILES))
 DEPFILES := $(patsubst src/%.c,obj/%.d,$(SRCFILES))
-OBJNOASSFILES := $(patsubst obj/assignment.o,,$(OBJFILES))
+OBJNOASSFILES := $(patsubst obj/simulator.o,,$(OBJFILES))
 
-roundrobin: $(filter-out obj/sjf.o obj/assignment.o,$(OBJFILES))
+roundrobin: $(filter-out obj/sjf.o obj/simulator.o,$(OBJFILES))
 	@echo [LD] $@
 	@$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^
 
-sjf: $(filter-out obj/roundrobin.o obj/assignment.o,$(OBJFILES))
+sjf: $(filter-out obj/roundrobin.o obj/simulator.o,$(OBJFILES))
 	@echo [LD] $@
 	@$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^
 
-assignment: $(filter-out obj/roundrobin.o obj/sjf.o,$(OBJFILES))
+simulator: $(filter-out obj/roundrobin.o obj/sjf.o,$(OBJFILES))
 	@echo [LD] $@
 	@$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^
 
@@ -35,6 +35,6 @@ obj/%.o: src/%.c
 	@$(CC) $(CFLAGS) -MF $(patsubst obj/%.o, obj/%.d,$@) -c $< -o $@
 
 clean:
-	rm -fr obj sjf roundrobin assignment
+	rm -fr obj sjf roundrobin simulator
 
 -include $(SRCFILES:.c=.d)

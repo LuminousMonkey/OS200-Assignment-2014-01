@@ -45,6 +45,8 @@ int main(void) {
   // Wait for all the children to be created.
   wait_for_schedulers(&shared_data);
 
+  printf("Simulation: ");
+
   while (file_from_user(shared_data.input_buffer, BUFFER_SIZE)) {
     shared_data.input_ready = true;
 
@@ -53,7 +55,6 @@ int main(void) {
     // Stop the children racing ahead and putting something in the
     // output buffer before we're ready.
     pthread_mutex_lock(&shared_data.output_mutex);
-
     pthread_mutex_unlock(&shared_data.input_mutex);
 
     // Wait for all the children to have read the input buffer.
@@ -101,6 +102,8 @@ int main(void) {
      * mutex.
      */
     pthread_mutex_lock(&shared_data.input_mutex);
+
+    printf("Simulation: ");
   }
 
   shared_data.quit = true;

@@ -19,6 +19,8 @@ int main() {
   const int FILENAME_SIZE = 100;
   char filename[FILENAME_SIZE];
 
+  printf("SJF Simulation: ");
+
   while (file_from_user(filename, FILENAME_SIZE)) {
     struct SchedulerAverages averages;
 
@@ -27,5 +29,6 @@ int main() {
     printf("Average turnaround time=%.2f."
            "Average waiting time=%.2f\n",
            averages.turnaround_time, averages.waiting_time);
+    printf("SJF Simulation: ");
   }
 }

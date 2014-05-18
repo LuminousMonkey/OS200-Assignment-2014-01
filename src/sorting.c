@@ -10,6 +10,12 @@
 #include "process_entry.h"
 #include "sorting.h"
 
+/*
+ * selection_sort
+ *
+ * Takes a list and will return a sorted process_table. Items are
+ * removed from the list as they are added to the process table.
+ */
 void selection_sort(struct LinkedList *const list,
               struct ProcessEntry *const process_table) {
 

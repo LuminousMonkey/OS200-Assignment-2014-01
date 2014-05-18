@@ -10,12 +10,16 @@
 
 #include "user_input.h"
 
+/*
+ * file_from_user
+ *
+ * Will get a string from the user for the filename. Will not be
+ * longer than size.
+ */
 bool file_from_user(char *const restrict filename, const size_t size) {
   bool result = true;
 
-  printf("RR simulation: ");
-
-  if (fgets(filename, size, stdin)) {
+  if (fgets(filename, size - 1, stdin)) {
     // Remove the trailing newline, it's annoying.
     size_t length = strlen(filename) - 1;
     if (filename[length] == '\n') {

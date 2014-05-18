@@ -53,6 +53,12 @@ void sjf_scheduler(struct ProcessEntry *const restrict process_table,
   }
 }
 
+/*
+ * sjf_next_process
+ *
+ * Given the process table, size of the process table, and the current
+ * cpu time, find out the next process that is to be run.
+ */
 static int sjf_next_process(
     const struct ProcessEntry *const restrict process_table,
     const int number_of_processes,

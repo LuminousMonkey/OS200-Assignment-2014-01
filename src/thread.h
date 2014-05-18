@@ -55,6 +55,7 @@ struct SharedData {
   pthread_mutex_t scheduler_ready_mutex;
   pthread_cond_t scheduler_ready_cond;
   int schedulers_ready;
+  int total_sched_threads;
 
   pthread_mutex_t output_mutex;
   pthread_cond_t output_cond;

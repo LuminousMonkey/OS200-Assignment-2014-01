@@ -1,0 +1,17 @@
+OS200 Assignment
+================
+
+Build instructions
+------------------
+
+make clean && make
+
+sjf - Shortest job first scheduler
+roundrobin - Round Robin scheduler
+simulator - Multi-threaded simulator
+
+Test data is in the test/ directory.
+
+Enter in the filename, including relative path. i.e. when prompted.
+
+test/midtest.txt
